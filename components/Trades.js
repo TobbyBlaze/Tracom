@@ -47,16 +47,18 @@ const storage = new Storage({
     }
   });
 
-export default class Home extends Component{
+export default class Trades extends Component{
     constructor(props) {
         super(props)
     
         this.state = {
             id: '',
-            journal: '',
-            newjournal: '',
-            journals: [],
+            trade: '',
+            newtrade: '',
+            trades: [],
             auth: null,
+            adminAuth: null,
+            status: null,
             user_id: '',
             user_name: '',
             loading: true,
@@ -73,12 +75,12 @@ export default class Home extends Component{
     
       handleChange = (value)=>{
         value.persist();
-        this.setState({journal: value.nativeEvent.text})
+        this.setState({trade: value.nativeEvent.text})
     }
 
     fetchData = () => {
         axios
-            .get('https://rmgtapi.herokuapp.com/api/auth?page='+this.state.page, {
+            .get('https://rmgtapi.herokuapp.com/api/auth/trades?page='+this.state.page, {
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': 'Bearer '+this.state.auth,
@@ -86,13 +88,13 @@ export default class Home extends Component{
             })
             .then(response => {
                 // console.log(this.state)
-                // console.log("All responses from journals data")
+                // console.log("All responses from trades data")
                 // console.log(response)
-                // console.log("All journals")
-                // console.log(response.data.journals.data)
+                // console.log("All trades")
+                // console.log(response.data.trades.data)
                 // console.log(response.data.user)
-                // this.setState({ journals: response.data.journals.data })
-                this.setState({ journals: [...this.state.journals, ...response.data.journals.data] })
+                // this.setState({ trades: response.data.trades.data })
+                this.setState({ trades: [...this.state.trades, ...response.data.trades.data] })
                 this.setState({ loadingMore: false })
                 this.setState({ refreshing: false })
                 // this.setState({ user: response.data.user })
@@ -100,11 +102,12 @@ export default class Home extends Component{
                 // this.setState({ user_name: response.data.user.name })
             })
             .catch(error => {
-                // console.log("Error from journals data")
+              // console.log("Here")
+                // console.log("Error from trades data")
                 // console.log(error)
                 this.setState({ loadingMore: false })
                 this.setState({ refreshing: false })
-                Alert.alert('Please login to view your journals');
+                // Alert.alert('Please login to view your trades');
                 this.setState({errorMsg: 'Error retrieving data'})
             })
     }
@@ -127,19 +130,10 @@ export default class Home extends Component{
       .load({
         key: 'loginState',
     
-        // autoSync (default: true) means if data is not found or has expired,
-        // then invoke the corresponding sync method
         autoSync: true,
     
-        // syncInBackground (default: true) means if data expired,
-        // return the outdated data first while invoking the sync method.
-        // If syncInBackground is set to false, and there is expired data,
-        // it will wait for the new data and return only after the sync completed.
-        // (This, of course, is slower)
         syncInBackground: true,
     
-        // you can pass extra params to the sync method
-        // see sync example below
         syncParams: {
           extraFetchOptions: {
             // blahblah
@@ -149,12 +143,15 @@ export default class Home extends Component{
       })
       .then(ret => {
         // found data go to then()
-        // console.log("ret token")
+        // console.log("Auth token")
         // console.log(ret.token);
+        // console.log(ret.status);
+        // console.log("Auth token end")
         this.setState({ auth: ret.token })
+        this.setState({ status: ret.status })
         
         axios
-            .get('https://rmgtapi.herokuapp.com/api/auth', {
+            .get('https://rmgtapi.herokuapp.com/api/auth/trades', {
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': 'Bearer '+ret.token,
@@ -162,21 +159,23 @@ export default class Home extends Component{
             })
             .then(response => {
                 // console.log(this.state)
-                // console.log("All responses from journals data")
+                // console.log("All responses from trades data")
                 // console.log(response)
-                // console.log("All journals")
-                // console.log(response.data.journals.data)
+                // console.log("All trades")
+                // console.log(response.data.trades.data)
                 // console.log(response.data.user)
-                this.setState({ journals: response.data.journals.data })
+                this.setState({ trades: response.data.trades.data })
                 // this.setState({ user: response.data.user })
                 this.setState({ loading: false })
-                Alert.alert('Your data is kept private and encrypted. Only you can see your journals');
+                // Alert.alert('Your data is kept private and encrypted. Only you can see your trades');
                 // this.setState({ user_name: response.data.user.name })
             })
             .catch(error => {
-                // console.log("Error from journals data")
+                // console.log("Error from trades data")
+                // console.log("Here")
                 // console.log(error)
-                Alert.alert('Please login to view your journals');
+                
+                Alert.alert('PLease login to view daily trades.');
                 this.setState({errorMsg: 'Error retrieving data'})
             })
         
@@ -196,6 +195,54 @@ export default class Home extends Component{
         this.props.navigation.navigate('Settings')
       });
 
+      // storage
+      // .load({
+      //   key: 'loginStatus',
+    
+      //   // autoSync (default: true) means if data is not found or has expired,
+      //   // then invoke the corresponding sync method
+      //   autoSync: true,
+    
+      //   // syncInBackground (default: true) means if data expired,
+      //   // return the outdated data first while invoking the sync method.
+      //   // If syncInBackground is set to false, and there is expired data,
+      //   // it will wait for the new data and return only after the sync completed.
+      //   // (This, of course, is slower)
+      //   syncInBackground: true,
+    
+      //   // you can pass extra params to the sync method
+      //   // see sync example below
+      //   syncParams: {
+      //     extraFetchOptions: {
+      //       // blahblah
+      //     },
+      //     someFlag: true
+      //   }
+      // })
+      // .then(ret => {
+      //   // found data go to then()
+      //   // console.log("Auth status")
+      //   // console.log(ret);
+      //   // // console.log(ret.token);
+      //   // // console.log("Auth status end")
+      //   // this.setState({ status: ret.token })
+      // })
+      // .catch(err => {
+      //   // any exception including data not found
+      //   // goes to catch()
+      //   // console.log("Auth error nd")
+      //   console.warn(err.message);
+      //   switch (err.name) {
+      //     case 'NotFoundError':
+      //       Alert.alert('Please login');
+      //       break;
+      //     case 'ExpiredError':
+      //       Alert.alert('Your session has expired, please login again');
+      //       break;
+      //   }
+      //   // this.props.navigation.navigate('Settings')
+      // });
+
     //   axios
     //         .get('https://rmgtapi.herokuapp.com/api/auth', {
     //             headers: {
@@ -205,18 +252,18 @@ export default class Home extends Component{
     //         })
     //         .then(response => {
     //             // console.log(this.state)
-    //             // console.log("All responses from journals data")
+    //             // console.log("All responses from trades data")
     //             // console.log(response)
-    //             // console.log("All journals")
-    //             // // console.log(response.data.journals.data)
+    //             // console.log("All trades")
+    //             // // console.log(response.data.trades.data)
     //             // // console.log(response.data.user)
-    //             // this.setState({ journals: response.data.journals.data })
+    //             // this.setState({ trades: response.data.trades.data })
     //             // this.setState({ user: response.data.user })
     //             this.setState({ loading: false })
     //             // this.setState({ user_name: response.data.user.name })
     //         })
     //         .catch(error => {
-    //             // console.log("Error from journals data")
+    //             // console.log("Error from trades data")
     //             // console.log(error)
     //             this.setState({errorMsg: 'Error retrieving data'})
     //         })
@@ -229,14 +276,14 @@ export default class Home extends Component{
         };
     }
 
-      addJournal = () => {
+      addtrade = () => {
         
         this.setState({ loading: true })
         // console.log("All states");
         // console.log(this.state);
         if(this.state.auth){
         axios
-            .post('https://rmgtapi.herokuapp.com/api/auth/storejournal', this.state,
+            .post('https://rmgtapi.herokuapp.com/api/auth/storetrade', this.state,
             {
                
                 headers: {
@@ -245,24 +292,24 @@ export default class Home extends Component{
                 }
             })
             .then(response => {
-                // console.log("All responses from add journal")
+                // console.log("All responses from add trade")
                 // console.log(response)
-                // console.log("Journal data");
+                // console.log("trade data");
                 // console.log(response.data);
-                // this.setState({ newjournal: response.data })
-                this.setState({ journal: '' })
-                this.setState({ journals: [response.data, ...this.state.journals] })
-                Alert.alert('Journal added successfully');
+                // this.setState({ newtrade: response.data })
+                this.setState({ trade: '' })
+                this.setState({ trades: [response.data, ...this.state.trades] })
+                Alert.alert('trade added successfully');
             })
             .catch(error => {
-                // console.log("Error from add journal")
+                // console.log("Error from add trade")
                 // console.log(error)
                 this.setState({errorMsg: 'Error retrieving data'})
                 this.setState({ loading: false })
-                Alert.alert('Error adding journal, please try again');
+                Alert.alert('Error adding trade, please try again');
             })
         }else{
-          Alert.alert('You need to login to add your journal');
+          Alert.alert('You need to login to add your trade');
         }
     }
 
@@ -292,7 +339,7 @@ export default class Home extends Component{
           {
             page: 1,
             refreshing: true,
-            journals: ''
+            trades: ''
           },
           () => {
             this.fetchData();
@@ -301,7 +348,7 @@ export default class Home extends Component{
       };
     
       render() {
-        const { id, journal, journals, newjournal, user_id, user_name, loading } = this.state
+        const { id, adminAuth, status, trade, trades, newtrade, user_id, user_name, loading } = this.state
 
         //Comparer Function  
         function GetSortOrder(prop) {  
@@ -325,7 +372,7 @@ export default class Home extends Component{
           );
 
           const renderItem = ({ item, time }) => (
-            <Item title={item.journal} time={item.created_at} />
+            <Item title={item.trade} time={item.created_at} />
           );
 
         return(
@@ -339,28 +386,32 @@ export default class Home extends Component{
                         <Image style={{width: 100, height: 40, borderRadius: 30, marginTop: 10, paddingBottom: 10}} source={require('./MgtMkt1.png')} />
                     </View> */}
 
+                    {status=='admin'?
                     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                       <View>
 
-                    <TextInput keyboardType="default" value={journal} placeholder="Type your journal" placeholderColor="#c4c3cb" style={styles.journalFormTextInput} onChange={this.handleChange} multiline={true} numberOfLines={5} returnKeyType="done" maxLength={300} />
+                    <TextInput keyboardType="default" value={trade} placeholder="Type your trade" placeholderColor="#c4c3cb" style={styles.tradeFormTextInput} onChange={this.handleChange} multiline={true} numberOfLines={5} returnKeyType="done" maxLength={300} />
             
                     <Button
-                    buttonStyle={styles.journalButton}
-                    onPress={() => this.addJournal()}
-                    title="Save now"
+                    buttonStyle={styles.tradeButton}
+                    onPress={() => this.addtrade()}
+                    title="Post now"
                     />
 
                     <Text> {"\n"} </Text>
                     </View>
                     </TouchableWithoutFeedback>
+                    :
+                    <View></View>
+                    }
 
                     <View style={{padding: 5, backgroundColor: "white"}}>
-                        <Text style={{color: "#3897f1", textAlign: "center"}}>My journals</Text>
+                        <Text style={{color: "#3897f1", textAlign: "center"}}>Trades</Text>
                     </View>
-                    {journal?(
+                    {trade?(
                     <View style={{padding: 10, margin: 10, backgroundColor: "white", borderRadius: 15, borderWidth: 2, borderColor: "grey", borderStyle: "dotted", opacity: 0.5}}>
                         <Text style={{color: "#3897f1", textAlign: "left"}}>
-                            {journal}
+                            {trade}
                         </Text>
                         <Text style={{color: "black", textAlign: "right", fontSize: 8,}}>
                             now
@@ -374,9 +425,8 @@ export default class Home extends Component{
 
                     {/* <View> */}
                         <FlatList
-                            data={journals}
+                            data={trades}
                             renderItem={renderItem}
-                            // keyExtractor={item => item.id}
                             keyExtractor={item => item.id.toString()}
                             onEndReached={this.handleLoadMore}
                             onEndReachedThreshold={0.1}
@@ -391,12 +441,12 @@ export default class Home extends Component{
                    
                 <Text> {"\n"} </Text>
                     <View style={{padding: 5, backgroundColor: "white"}}>
-                        <Text style={{color: "#3897f1", textAlign: "center"}}>JOURNALS</Text>
+                        <Text style={{color: "#3897f1", textAlign: "center"}}>tradeS</Text>
                     </View>
-                    {journal?(
+                    {trade?(
                     <View style={{padding: 10, margin: 10, backgroundColor: "white", borderRadius: 15, borderWidth: 2, borderColor: "grey", borderStyle: "dotted", opacity: 0.5}}>
                         <Text style={{color: "#3897f1", textAlign: "left"}}>
-                            {journal}
+                            {trade}
                         </Text>
                         <Text style={{color: "black", textAlign: "right", fontSize: 8,}}>
                             now
@@ -407,13 +457,13 @@ export default class Home extends Component{
 
                         </View>
                     )}
-                    {journals.map(journal=>
-                        <View key={journal.id} style={{padding: 10, margin: 10, backgroundColor: "white", borderRadius: 15, borderWidth: 2, borderColor: "grey", borderStyle: "dotted", opacity: 0.5}}>
+                    {trades.map(trade=>
+                        <View key={trade.id} style={{padding: 10, margin: 10, backgroundColor: "white", borderRadius: 15, borderWidth: 2, borderColor: "grey", borderStyle: "dotted", opacity: 0.5}}>
                             <Text style={{color: "#3897f1", textAlign: "left", margin: 10}}>
-                                {journal.journal}
+                                {trade.trade}
                             </Text>
                             <Text style={{color: "black", textAlign: "right", fontSize: 8,}}>
-                                {moment(journal.created_at).fromNow()}
+                                {moment(trade.created_at).fromNow()}
                             </Text>   
                         </View>
                         

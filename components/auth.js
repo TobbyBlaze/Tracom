@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import axios from 'axios';
 
+import { NativeModules } from "react-native";
+
 import styles from "./style";
 import {Keyboard, Text, View, TextInput, TouchableWithoutFeedback, Alert, KeyboardAvoidingView} from 'react-native';
 import {
@@ -69,6 +71,11 @@ export default class AuthScreen extends Component {
         <View style={styles.loginScreenContainer}>
           <View style={styles.loginFormView}>
           <Text style={styles.logoText}>Tracom</Text>
+          {/* <Button
+              buttonStyle={styles.otherButton}
+              onPress={() => this.props.navigation.navigate('Login')}
+              title="Login/Register"
+            /> */}
             
             {auth == null?(
             <Button
@@ -99,6 +106,8 @@ export default class AuthScreen extends Component {
   }
 
   componentDidMount() {
+    // this.forceUpdate();
+    // this.setState({ loading: true })
     storage
   .load({
     key: 'loginState',
@@ -125,8 +134,9 @@ export default class AuthScreen extends Component {
   })
   .then(ret => {
     // found data go to then()
-    console.log(ret.token);
+    // console.log(ret.token);
     this.setState({ auth: ret.token })
+    // this.setState({ loading: false })
   })
   .catch(err => {
     // any exception including data not found
@@ -141,42 +151,59 @@ export default class AuthScreen extends Component {
         break;
     }
   });
+  
   }
+
+  
 
   componentWillUnmount() {
   }
 
   logoutHandler =() => {
     
-    console.log("All states")
-    console.log(this.state)
+    // console.log("All states")
+    // console.log(this.state)
     // var a=localStorage.getItem("authen");
     // this.setState({ loading: true })
 
     axios
-        .get('https://riskmgtapi.herokuapp.com/api/auth/logout',{
+        .get('https://rmgtapi.herokuapp.com/api/auth/logout',{
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': 'Bearer '+this.state.auth,
             }
         })
         .then(response => {
-            console.log("All responses from logout")
-            console.log(response);
+            // console.log("All responses from logout")
+            // console.log(response);
             this.setState({ auth: null })
-            console.log(this.state.auth);
+            // console.log(this.state.auth);
+
+            storage.remove({
+              key: 'loginState'
+            });
+            storage.remove({
+              key: 'loginStatus'
+            });
+        
+            NativeModules.DevSettings.reload();
             
-            this.props.navigation.navigate('Login')
+            // this.props.navigation.navigate('Login')
         })
         .catch(error => {
-            console.log("Error from logout")
-            console.log(error)
+            // console.log("Error from logout")
+            // console.log(error)
             // this.setState({ loading: false })
         })
 
-    storage.remove({
-      key: 'loginState'
-    });
+    // storage.remove({
+    //   key: 'loginState'
+    // });
+    // storage.remove({
+    //   key: 'loginStatus'
+    // });
+
+    // NativeModules.DevSettings.reload();
 }
 
 }

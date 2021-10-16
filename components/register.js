@@ -89,13 +89,13 @@ conpassChange = (value)=>{
 
   signupHandler = () => {
     
-    console.log(this.state)
-    console.log("States above")
+    // console.log(this.state)
+    // console.log("States above")
     this.setState({ loading: true })
 
     axios
         
-        .post('http://riskmgtapi.herokuapp.com/api/auth/signup', this.state
+        .post('http://rmgtapi.herokuapp.com/api/auth/signup', this.state
         , {
             headers: {
                 'Content-Type': 'application/json',
@@ -103,11 +103,28 @@ conpassChange = (value)=>{
         })
         .then(response => {
             // this.loginHandler();
-            console.log(response)
-            this.props.navigation.navigate('Login')
+            // console.log(response)
+            // this.props.navigation.navigate('Login')
+
+            var authe = response.data.token;
+            var stat = response.data.status;
+
+            storage.save({
+              key: 'loginState', // Note: Do not use underscore("_") in key!
+              data: {
+                token: authe,
+                status: stat
+              },
+            
+              // if expires not specified, the defaultExpires will be applied instead.
+              // if set to null, then it will never expire.
+              expires: 1000 * 3600
+            });
+
+            NativeModules.DevSettings.reload();
         })
         .catch(error => {
-            console.log(error)
+            // console.log(error)
             this.setState({ loading: false })
         })
 }

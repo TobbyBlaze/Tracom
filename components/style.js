@@ -50,6 +50,21 @@ journalFormTextInput: {
   marginBottom: 5,
 
 },
+tradeFormTextInput: {
+  height: 100,
+  fontSize: 14,
+  borderRadius: 15,
+  borderWidth: 3,
+  borderColor: 'grey',
+  backgroundColor: '#fafafa',
+  color: '#3897f1',
+  paddingLeft: 10,
+  marginLeft: 15,
+  marginRight: 15,
+  marginTop: 5,
+  marginBottom: 5,
+
+},
 loginButton: {
   backgroundColor: '#3897f1',
   borderRadius: 20,
@@ -57,6 +72,14 @@ loginButton: {
   marginTop: 10,
 },
 journalButton: {
+  backgroundColor: '#3897f1',
+  // borderWidth: 3,
+  // borderColor: 'grey',
+  borderRadius: 15,
+  height: 45,
+  marginTop: 10,
+},
+tradeButton: {
   backgroundColor: '#3897f1',
   // borderWidth: 3,
   // borderColor: 'grey',

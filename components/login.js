@@ -1,7 +1,9 @@
 import React, { Component } from "react";
 import axios from 'axios';
 
-import RNRestart from 'react-native-restart';
+import { NativeModules } from "react-native";
+
+// import RNRestart from 'react-native-restart';
 
 import styles from "./style";
 import {Keyboard, Text, View, TextInput, TouchableWithoutFeedback, Alert, KeyboardAvoidingView} from 'react-native';
@@ -111,38 +113,52 @@ this.setState({password: value.nativeEvent.text})
 
   loginHandler = () => {
     
-    console.log(this.state)
-    console.log("All states above")
+    // console.log(this.state)
+    // console.log("All states above")
     this.setState({ loading: true })
 
     axios
         // .post('http://localhost/yummypizza/public/api/auth/login', this.state)
-        .post('https://riskmgtapi.herokuapp.com/api/auth/login', this.state)
+        .post('https://rmgtapi.herokuapp.com/api/auth/login', this.state)
         .then(response => {
-            console.log(response);
+            // console.log(response);
             var authe = response.data.token;
+            var stat = response.data.status;
             // localStorage.setItem("authen",authe);
 
             storage.save({
               key: 'loginState', // Note: Do not use underscore("_") in key!
               data: {
-                token: authe
+                token: authe,
+                status: stat
               },
             
               // if expires not specified, the defaultExpires will be applied instead.
               // if set to null, then it will never expire.
               expires: 1000 * 3600
             });
+            // storage.save({
+            //   key: 'loginStatus', // Note: Do not use underscore("_") in key!
+            //   data: {
+            //     token: stat
+            //   },
+            
+            //   // if expires not specified, the defaultExpires will be applied instead.
+            //   // if set to null, then it will never expire.
+            //   expires: 1000 * 3600
+            // });
 
-            console.log(authe);
-            RNRestart.Restart();
-            // this.props.navigation.navigate('Tracom')
+            // console.log(authe);
+            // console.log(stat);
+            // RNRestart.Restart();
+            // this.props.navigation.navigate('Settings')
+            NativeModules.DevSettings.reload();
             // window.location.href = "https://neomall.herokuapp.com"
             // window.history.pushState({}, null, '/shop')
             // var sub = true;
         })
         .catch(error => {
-            console.log(error)
+            // console.log(error)
             this.setState({ loading: false })
         })
 }

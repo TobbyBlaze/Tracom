@@ -15,8 +15,9 @@ import AuthScreen from './components/auth';
 import LoginScreen from './components/login';
 import RegisterScreen from './components/register';
 import Home from './components/Home';
+import Trades from './components/Trades';
 import About from './components/About';
-import RiskMgt from './components/RiskMgt';
+import rmgt from './components/Rmgt';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -24,7 +25,7 @@ const Stack = createStackNavigator();
 function AuthStack() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Auth" component={AuthScreen} />
+      <Stack.Screen name="Settings" component={AuthScreen} />
       <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="Register" component={RegisterScreen} />
       <Stack.Screen name="Tracom" component={Home} />
@@ -43,10 +44,20 @@ function HomeStack() {
   );
 }
 
+function TradeStack() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="Daily Trades" component={Trades} />
+      
+      
+    </Stack.Navigator>
+  );
+}
+
 function MgtStack() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Risk manager" component={RiskMgt} />
+      <Stack.Screen name="Risk manager" component={rmgt} />
       
       
     </Stack.Navigator>
@@ -67,11 +78,13 @@ export default function App() {
             iconName = focused
               ? 'ios-journal'
               : 'ios-journal';
+          } else if (route.name === 'Daily Trades') {
+            iconName = focused ? 'md-checkmark-circle' : 'md-checkmark-circle-outline';
           } else if (route.name === 'Risk manager') {
-            iconName = focused ? 'ios-trending-up' : 'ios-trending-down';
+            iconName = focused ? 'ios-analytics' : 'ios-analytics-outline';
           } else if (route.name === 'About') {
             iconName = focused ? 'ios-information-circle' : 'ios-information-circle-outline';
-          } else if (route.name === 'Auth') {
+          } else if (route.name === 'Settings') {
             iconName = focused ? 'ios-finger-print' : 'ios-finger-print';
           }
 
@@ -85,8 +98,9 @@ export default function App() {
       }}
     >
       <Tab.Screen name="Journals" component={HomeStack} />
+      <Tab.Screen name="Daily Trades" component={TradeStack} />
       <Tab.Screen name="Risk manager" component={MgtStack} />
-      <Tab.Screen name="Auth" component={AuthStack} />
+      <Tab.Screen name="Settings" component={AuthStack} />
      
     </Tab.Navigator>
     </NavigationContainer>
